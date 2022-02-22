@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "outDir": "dist",
+        "target": "es2015", //es3, es5, es6/es2015, es2016, es2017, es2018, es2019, es2020, es2021, or esnext
+        "noEmitOnError": true,
+        "strict": true
+    }  ,
+    "files": [
+        "src/app.ts"
+    ]
+}
