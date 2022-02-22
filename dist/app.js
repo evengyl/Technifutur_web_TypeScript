@@ -33,19 +33,24 @@ le fichier tsconfig.json permet de configurer des options de compilation, exempl
 #--------------------Partie sur le Typage ------------------#
 #                                                           #
 #############################################################*/
-const a = "Bonjour à tous";
-const b = 42;
-const c = true;
-const d = null;
-const e = ["tutu", "tata", "toto"];
-const f = ["tutu", {}, true, 42];
-const g = { firstname: "loic", lastname: "baudoux" };
-const h = { firstname: "loic", lastname: "baudoux" };
-let i = new Date();
-const j = (e) => {
-};
-const k = (e) => {
-};
+/*
+const a : string = "Bonjour à tous"
+const b : number = 42
+const c : boolean = true
+const d : null = null
+const e : string[] = ["tutu", "tata", "toto"]
+const f : any[] = ["tutu", {}, true, 42]
+const g : {firstname : string, lastname : string} = {firstname : "loic", lastname : "baudoux"}
+const h : {[key : string] : string} = {firstname : "loic", lastname : "baudoux"}
+let i : Date = new Date()
+
+const j : Function = (e : MouseEvent) : void => {
+
+}
+const k : (e : MouseEvent) => void  = (e : MouseEvent) : void => {
+
+}
+*/
 //attention que le type de retour void, peux avoir un return, mais il ne pourra pas être utilisé plus tard, donc erreur
 /*on peux utiliser les variable de chaine, comme litéral, qui pourrais être utilisé comme clé et non seulement comme chaine
 ps : on peux également le faire avec autre chsoe que des chaines*/
@@ -57,14 +62,18 @@ console.log(g[l])*/
 //ici on peux voir que compteur est de type Element ou null, c'est ce qu'on appel l'union, on peux le faire pour tout, exemple en dfessous
 //const compteur = document.querySelector("#compteur") as HTMLButtonElement // type HTMLButtonElement
 //ou -> mais ce sont les générics, seront aborder plus tard
-const compteur = document.querySelector("#compteur"); // type HTMLButtonElement
-const increment = (e) => {
-    let compteurSpan = compteur.querySelector('span');
-    compteurSpan.innerText = i.toString();
-};
+/*
+const compteur = <HTMLButtonElement>document.querySelector("#compteur") // type HTMLButtonElement
+const increment = (e : string | number) => {
+    let compteurSpan = <HTMLSpanElement>compteur.querySelector('span')
+    compteurSpan.innerText = i.toString()
+}
+
 compteur.addEventListener("click", () => {
-    increment("e");
-});
+    
+    increment("e")
+})
+*/
 /*
 
 
@@ -77,3 +86,112 @@ compteur.addEventListener("click", () => {
 #############################################################*/
 //Créer un code permettant de créer un compteur classique, avec + 1, -1 et =..., 
 //il faudra type le tout au maximum, préparer 2 fonctions pour ça
+/*
+
+const btnPlus : HTMLButtonElement | null = document.querySelector("#compteurP")
+const btnMoins : HTMLButtonElement | null  = document.querySelector("#compteurM")
+const total : HTMLSpanElement | null = document.querySelector("#total")
+let actual : number
+
+if(total)
+    actual = parseInt(total.innerText)
+
+const increment : (e : MouseEvent) => void = (event : MouseEvent) : void=> {
+    event.preventDefault()
+    actual = actual + 1
+    if(total){
+        //total //do'ffice un element
+        total.innerText = actual.toString()
+    }
+}
+const decrement : (e : MouseEvent) => void = (event : MouseEvent) : void => {
+    event.preventDefault()
+    actual = actual - 1
+    if(total)
+        total.innerText = actual.toString()
+
+}
+
+
+if(btnPlus)
+    btnPlus.addEventListener("click", increment)
+
+if(btnMoins)
+    btnMoins.addEventListener("click", decrement)
+
+*/
+/*###########################################################
+#                                                           #
+#--------------------Partie Narrowing --------------------#
+#                                                           #
+#############################################################*/
+//-----------ou comment réduire la liste des type disponible---------------
+//const total = document.querySelector("#total") //ici, peux être de type Element ou null
+//const total = document.querySelector("#total")! //ici, peux être de type Element
+//const total = document.querySelector("#total") as HTMLSpanElement
+//ici, peux être de type HTMLSpanElement
+// attention en utilisant ça, car on empèche le code d'être null sur la page ! ce qui apportera son lot d'erreurs,
+// il faudra préférer les condition au narrowing forcé comme as et !
+//autre exemple
+/*
+const decrement : (e : MouseEvent) => void = (event : MouseEvent) : void => {
+    event.preventDefault()
+    const span = document.querySelector<HTMLSpanElement>("#total")
+    //actuellement span peux être ou un element ou un null
+    //span.innerText = String(42)
+
+    //pour palier au null, on peux simplement le vérifier sur un if, car si null, il passera en else
+
+    if(span)
+        span.innerText = String(42)
+
+}
+decrement(new MouseEvent('click'))
+*/
+//autre exemple
+/*
+function printId(id : string | number) : void{
+    if(typeof id === "number")
+        console.log((id *42).toString())
+    else
+        console.log((id + " tututoto").toUpperCase())  //ici il sait directement que id est de type string ! car justement on à éliminer le type number
+}
+printId("tutu")
+*/
+//autre exemple
+/*
+function exemple(a : string | number, b : string | boolean)
+{
+    if(a === b)
+        console.log(a)
+}*/
+//autre exemple un poil plus complexe
+/*
+function exempleInOperator(a : MouseEvent | HTMLInputElement)
+{
+    if("value" in a)
+    {
+        a   // ici a est d'office un htmlinputelement car dans l'obj htmlinputelement il y a la prop value et pas dans mouseevent
+    }
+
+    if("tututu" in a)
+    {
+        a // sera de type never, car jamais; MouseEvent et HTMLInputElement ne contiendra de prop tututu non prototyper
+    }
+}*/
+//Autre exemple pour la gestion des retour, 
+//si un type est valable de type date alors retourne tel quel un type date dans a
+/*
+function isDate(a :any) : a is Date
+{
+    return a //ici, si a est de type date alors, a est retourner en date
+}
+
+function exempleIsDate(a : string | Date | number){
+    a = "tutu"
+    a
+    if(isDate(a)){
+        console.log(a.getDay())
+    }
+}
+*/ 
