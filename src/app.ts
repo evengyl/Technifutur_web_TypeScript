@@ -277,7 +277,7 @@ const ad = first(["a", "b", "c"])
 
 //autre exemple, on peux dire à notre generic que ce qu'il va recevoir en paramètre dois contenir, un objet qui contient une prop 
 //length qui elle même est un number
-
+/*
 function consoleSize<Type extends {length : number}>(arg : Type) : Type{
     console.log(arg.length)
     return arg
@@ -304,7 +304,7 @@ user = {
 const ag = gestUsers(user)
 const ah = gestUsers<Users>(user)
 
-
+*/
 
 
 /*###########################################################
@@ -313,3 +313,281 @@ const ah = gestUsers<Users>(user)
 #                                                           #
 #############################################################*/
 //reprendre le code de l'exos 1 et tranformer le tout avec des narrowing et des generics
+
+/*
+const btnPlus = document.querySelector<HTMLButtonElement>("#compteurP")
+const btnMoins = document.querySelector<HTMLButtonElement>("#compteurM")
+const total = document.querySelector<HTMLSpanElement>("#total")!
+let actual = <number>parseInt(total.innerText)
+
+const increment : (e : MouseEvent) => void = (event : MouseEvent) : void=> {
+    event.preventDefault()
+    actual = actual + 1
+    total.innerText = actual.toString()
+}
+
+
+function setActual<ArgType>(nb : ArgType) : number{
+    let a = nb as unknown as number
+    a = a-1
+    return a
+}
+
+function decrement(event : Event) : void
+{
+    event.preventDefault()
+    actual = setActual<number>(actual)
+    total.innerText = actual.toString()
+
+}
+
+
+
+btnPlus?.addEventListener("click", increment)
+btnMoins?.addEventListener<keyof HTMLElementEventMap>("click", decrement)
+*/
+
+
+
+/*###########################################################
+#                                                           #
+#--------------------Partie sur les classes ----------------#
+#                                                           #
+#############################################################*/
+
+/*
+class Person{
+    protected age = 30 //protected signifie qu'il est dispo dans la classe et dans les classe enfant héritée de person !
+
+}
+
+
+class User extends Person{
+    private firstName = "Loïc" //uniquement disponible que dans la class User !
+    public lastName = "Baudoux" //par défaut, si on ne le met pas c'est pareil
+    
+
+    log() {
+        console.log(this.firstName) // seul manière d'y accéder
+
+        console.log(this.age) //je peux y accéder car je suis en extends de person
+    }
+}
+
+
+const user = new User()
+console.log(user)
+//console.log(user.firstName)
+console.log(user.lastName)
+//console.log(user.age)
+user.log()
+*/
+
+
+//attention que si cette pratique, de mettre private et protected marche en ts, elle ne sera pas fonctionel sur le js pure !
+// on peux, si on compile vers une version très récente de JS, utilisé # devant les props, qui les rendes vraiment private
+/*
+class User2{
+    #firstName = "Loic"
+    #lastName = "Baudoux"
+
+    log(){
+        console.log(this.#firstName)
+    }
+}
+
+const user2 = new User2()
+console.log(user2)  //ne permettra de ne rien avoir dans la console !!!
+*/
+
+
+//on peux,  grace au constructeur, rendre la création de props dynamiquement paramétrée
+/*
+class User{
+    constructor(public a : number, public b : string)
+    {
+
+    }
+}
+const user = new User(30, "tutu")
+console.log(user)
+*/
+
+
+//on peux également avoir des généric dans les class
+/*
+class User2<T> { //je dis que user2 sera construit en donnant T comme type
+    constructor(private item : T[]){ //le constructeur pourra recevoir un type[]
+
+    }
+
+    first() : T | null{ //first permettra de renvoyer un T ou null
+        return this.item[1] || null //renvoi item0 ou null 
+    }
+}
+
+const user2 = new User2(["tutu", "tata"]) //implicite
+// ou 
+const user3 = new User2<string>(["titi", "toto"]) //explicite
+console.log(user2.first())
+console.log(user3.first())
+*/
+
+//on peux également, comme dans la plupars des languages de prog OO, retourner l'instance
+/*
+class User3<T> { //je dis que user2 sera construit en donnant T comme type
+    constructor(private item : T[]){ //le constructeur pourra recevoir un type[]
+
+    }
+
+    add(item : T) : this{
+        this.item.push(item)
+        return this
+    }
+
+    first() : T | null{ //first permettra de renvoyer un T ou null
+        return this.item[2] || null //renvoi item0 ou null 
+    }
+
+    addd = () => {
+        //exemple pour montrer que les fonctions flèchée sont légerement différente car apparaisse dans le log ! et pas les autre
+        //ps : elle n'ont pas été crée pour faire des fonctions :) mais pour faire des anonyme :)
+    }
+}
+const user4 = new User3(["tete", "toto"])
+const exempleUser = user4.add("tutu").add("bibi")
+console.log(exempleUser)
+*/
+
+
+//atention, typescript à un gros défaut... il travail avec ce qu'on appel le duck typing... exemple
+/*
+class Point{
+    x : number = 0
+    y : number = 0
+}
+
+class Geometry {
+    x : number = 0
+    y : number = 0
+    other1 : string = "tutu"
+    other2 : boolean = false
+}
+
+
+function getX(p : Point) : number { 
+    return p.x
+}
+
+
+console.log(getX(new Point))
+console.log(getX(new Geometry))
+
+// application d'une ocrrection
+function getX(p : Point | Geometry) : number | string { 
+    if(p instanceof Geometry)
+    {
+        return p.other1
+    }
+
+    return p.x
+}
+// et j'appel
+console.log(getX(new Point))
+console.log(getX(new Geometry))
+*/
+//on vois que ici on a pas de soucis, car comem dirait l'express, si ça fait coin et que ça marche comme un canard, c'est un canard...
+//donc si geometry est une class, comme point, et que geometry possède x et y, comme point, alors geometry est un point
+
+
+
+//Comme dans beaucoup de language OO, ts incorpore la notion de abstract, une class abstract est une classe incomplète, 
+//elle pourra contenir des methode non implémentée par exemple mais ses enfant devront l'implémenter, 
+// attention que les class abstract avec des méthode abstract ne peuvent être instanciée ! exemple :
+/*
+abstract class Geometry
+{
+    x! : number //ici si je met ! je spécifie que je ne l'initialise pas mais je devrai le faire par le constructeur (sauf abstract :))
+    y? : number //ici je spécifie que y peux être ou un nombre ou uindefined
+
+    abstract surface () : number
+}
+
+class Triangle extends Geometry{
+
+    x : number = 42
+    y : number = 105
+
+    surface(){
+        return this.x*this.y
+    }
+}
+*/
+
+//Nous avons aussi accès au class static, attention, existe également en js :)
+/*
+abstract class Geometry
+{
+    x! : number //ici si je met ! je spécifie que je ne l'initialise pas mais je devrai le faire par le constructeur (sauf abstract :))
+    y? : number //ici je spécifie que y peux être ou un nombre ou uindefined
+
+    abstract surface () : number
+
+    static origin = { x : 0, y : 0}
+}
+
+class Triangle extends Geometry{
+    x: number = 15
+    y: number = 42
+
+    surface(){
+        return this.x*this.y
+    }
+}
+
+//on peux accèder à origin sans avoir a instancier Triangle !
+const a = Geometry.origin
+console.log(a)
+*/
+
+
+interface Voiture{
+    nbRoue : number
+    typeMoteur : string
+    giletJaune : number
+    boiteVitesse : { auto : boolean, manual : boolean}
+    
+    getNbRoue() : number
+}
+
+class Italienne implements Voiture{
+    getNbRoue(): number {
+        return this.nbRoue
+    }
+    nbRoue!: number;
+    typeMoteur!: string;
+    giletJaune!: number;
+    boiteVitesse!: { auto: boolean; manual: boolean; };
+
+}
+
+const taFiatPunto = new Italienne()
+
+
+/*###########################################################
+#                                                           #
+#--------------------Exos 3 ----------------#
+#                                                           #
+#############################################################*/
+// - Préparer un micro jeu de type heroes vs monster, 
+/**
+ * vous aurez 2 grandes classes, heroes et monster, 
+ * le but, étant de pouvoir instancier un nouveau hero et un monstre avec des caractèristique différentes,
+ * ils devront être stocker dans un objet tableau grace a une fonction, 
+ * il devront pouvoir s'affronter graçe a des point de vie, d'attaque et de défénce,
+ * si vous avez terminer dans les temps imparti, vous pouvez améliorer, utilisez votre imagination
+ * requis: un generic, un narrowing, des classes, un static, une abstract, le tout entièrement typer !
+ * n'hésitez par à utiliser l'html pour ça et le rendre encore plus chouette
+ */
+
+

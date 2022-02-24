@@ -1,0 +1,23 @@
+Concevoir un programme en TS 
+qui permettra, de créer un micro jeu sur base de heores vs monster.
+
+vous devrez pour ça, 
+déployer deux type de données, monstres et heros.
+
+Sur base de ça, chaque class aura des méthode pour attaquer, ressuciter, défendre une collection.
+
+cette collection est un tableau de hero et un tableau de monstre, chaque équipe à 3 personnages.
+Chaque monstre ou hero aura des attributs à votre guise, tant qu'ils ont une vie et une attaque.
+
+Préparer une Class composée uniquement de méthodes générique qui permettra de pouvoir attaquer, défendre ou revivre
+
+ces méthode seront générique sur le type qui leur seront passé, hero ou monstre,
+
+la phase d'attaque devra faire tomber les points de vie de chaques adversaire, 
+peux importe qui commence, un petit jeu de dé peux être sympa.
+
+la phase de défense devra quand à elle diviser les dégats recu de 50%, comment savoir si on défend ou si on
+encaisse les dégats ? un random sur 0 -> 10, si + de 5 on défend.
+
+Par contre, les héros on un avantage d'attaque de 15% et les monstre on une défense de 10% en plus !
+Quand une équipe perd, il faudra indiquer à une page html qui à gagné et faire revivre les personnages.
